@@ -1,0 +1,195 @@
+version: "2"
+type: frontend
+tech_stack:
+  - PHP 8.2
+  - Laravel 12
+  - Inertia.js 2
+  - Vue 3
+  - TypeScript
+  - Vite
+  - Tailwind CSS v4
+  - Reka UI (headless components)
+  - Ziggy (Laravel route helpers in JS)
+routes:
+  - path: /
+    file: resources/js/pages/Welcome.vue
+    auth_required: false
+    description: Public landing page with Log in and Register links
+  - path: /login
+    file: resources/js/pages/auth/Login.vue
+    auth_required: false
+    description: User login form
+  - path: /register
+    file: resources/js/pages/auth/Register.vue
+    auth_required: false
+    description: New user registration form
+  - path: /forgot-password
+    file: resources/js/pages/auth/ForgotPassword.vue
+    auth_required: false
+    description: Request a password reset link via email
+  - path: /reset-password/{token}
+    file: resources/js/pages/auth/ResetPassword.vue
+    auth_required: false
+    description: Set a new password using the emailed token
+  - path: /verify-email
+    file: resources/js/pages/auth/VerifyEmail.vue
+    auth_required: true
+    description: Prompt user to verify their email address
+  - path: /confirm-password
+    file: resources/js/pages/auth/ConfirmPassword.vue
+    auth_required: true
+    description: Re-confirm password before sensitive actions
+  - path: /dashboard
+    file: resources/js/pages/Dashboard.vue
+    auth_required: true
+    description: Main feed showing all posts; ?my-posts=true shows friends' posts only
+  - path: /settings/profile
+    file: resources/js/pages/settings/Profile.vue
+    auth_required: true
+    description: Edit display name and email; delete account
+  - path: /settings/password
+    file: resources/js/pages/settings/Password.vue
+    auth_required: true
+    description: Change account password
+  - path: /settings/appearance
+    file: resources/js/pages/settings/Appearance.vue
+    auth_required: true
+    description: Toggle light/dark/system theme
+features:
+  - name: User Registration
+    description: Create a new account with name, email, and password
+    files:
+      - resources/js/pages/auth/Register.vue
+      - app/Http/Controllers/Auth/RegisteredUserController.php
+    entry_route: /register
+    user_interactions:
+      - Fill name input
+      - Fill email input
+      - Fill password input
+      - Fill confirm password input
+      - Click Register button
+      - Get redirected to dashboard on success
+      - See validation error messages on invalid input
+    api_calls:
+      - method: POST
+        endpoint: /register
+    auth_required: false
+  - name: User Login
+    description: Authenticate with email and password; supports remember me
+    files:
+      - resources/js/pages/auth/Login.vue
+      - app/Http/Controllers/Auth/AuthenticatedSessionController.php
+    entry_route: /login
+    user_interactions:
+      - Fill email input
+      - Fill password input
+      - Optionally toggle Remember Me checkbox
+      - Click Log in button
+      - Get redirected to dashboard on success
+      - See error message on invalid credentials
+      - Click Forgot password link to navigate to /forgot-password
+    api_calls:
+      - method: POST
+        endpoint: /login
+    auth_required: false
+  - name: Forgot Password
+    description: Request a password reset email
+    files:
+      - resources/js/pages/auth/ForgotPassword.vue
+      - app/Http/Controllers/Auth/PasswordResetLinkController.php
+    entry_route: /forgot-password
+    user_interactions:
+      - Fill email input
+      - Click Email password reset link button
+      - See confirmation status message
+    api_calls:
+      - method: POST
+        endpoint: /forgot-password
+    auth_required: false
+  - name: Post Feed (Dashboard)
+    description: View all posts from all users; optionally filter to friends' posts; submit a new post
+    files:
+      - resources/js/pages/Dashboard.vue
+      - app/Http/Controllers/PageController.php
+      - app/Models/Post.php
+    entry_route: /dashboard
+    user_interactions:
+      - View paginated list of posts with author name
+      - Click My Posts link to filter to friends' posts (/dashboard?my-posts=true)
+      - Type post body text into textarea
+      - Click Submit button to create a new post
+      - See new post appear in feed after submission
+    api_calls:
+      - method: GET
+        endpoint: /dashboard
+      - method: GET
+        endpoint: /dashboard?my-posts=true
+      - method: POST
+        endpoint: /posts
+    auth_required: true
+  - name: Profile Settings
+    description: Update display name and email address; delete account
+    files:
+      - resources/js/pages/settings/Profile.vue
+      - app/Http/Controllers/Settings/ProfileController.php
+    entry_route: /settings/profile
+    user_interactions:
+      - Change name field
+      - Change email field
+      - Click Save button to submit update
+      - See success confirmation
+      - Click Delete Account button and confirm deletion
+    api_calls:
+      - method: PATCH
+        endpoint: /settings/profile
+      - method: DELETE
+        endpoint: /settings/profile
+    auth_required: true
+  - name: Password Settings
+    description: Change account password
+    files:
+      - resources/js/pages/settings/Password.vue
+      - app/Http/Controllers/Settings/PasswordController.php
+    entry_route: /settings/password
+    user_interactions:
+      - Fill current password input
+      - Fill new password input
+      - Fill confirm password input
+      - Click Save button
+      - See success or error message
+    api_calls:
+      - method: PUT
+        endpoint: /settings/password
+    auth_required: true
+  - name: Appearance Settings
+    description: Switch application theme between light, dark, and system preference
+    files:
+      - resources/js/pages/settings/Appearance.vue
+    entry_route: /settings/appearance
+    user_interactions:
+      - Click Light, Dark, or System button to change theme
+      - See page theme update immediately
+    api_calls: []
+    auth_required: true
+  - name: Logout
+    description: End the current authenticated session
+    files:
+      - app/Http/Controllers/Auth/AuthenticatedSessionController.php
+    entry_route: /dashboard
+    user_interactions:
+      - Click Logout option in sidebar/nav
+      - Get redirected to the home page
+    api_calls:
+      - method: POST
+        endpoint: /logout
+    auth_required: true
+known_limitations:
+  - issue: Friends routes (POST /friends/{user}, PUT /friends/{user}) are commented out in routes/web.php
+    location: routes/web.php
+    impact: Friend request sending and acceptance are not accessible via the UI
+  - issue: Profile page route (/profile/{user}) is commented out
+    location: routes/web.php
+    impact: Public user profile pages cannot be viewed
+  - issue: Status page route (/status) is commented out
+    location: routes/web.php
+    impact: Friend request status page is not accessible

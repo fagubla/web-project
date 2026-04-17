@@ -1,0 +1,14 @@
+es una app de prueba para practicar el uso de laravel 12 y vue 3.
+
+la app es una red social de prueba.
+
+la app tiene las siguientes caracteristicas:
+
+- registro de usuario
+- login de usuario
+- logout de usuario
+- perfil de usuario
+- amigos de usuario
+- mensajes de usuario
+- notificaciones de usuario
+- ajustes de usuario

@@ -1,0 +1,972 @@
+[
+  {
+    "id": "TC001",
+    "title": "Create a new account and land on the dashboard",
+    "description": "Verifies a visitor can register with valid details and is redirected into the authenticated dashboard.",
+    "category": "User Registration",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill New User 1 into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill new.user.1@example.test into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same password into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Create a post from the dashboard feed",
+    "description": "An authenticated member can create a new post from the dashboard and the post appears in the feed.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique post message into the post body field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the new post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the newly created post is displayed in the feed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Log in successfully and land on the dashboard",
+    "description": "Verifies an existing user can log in with valid credentials and reach the authenticated dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Log out from the dashboard",
+    "description": "An authenticated member can log out and is returned to the public home page.",
+    "category": "Logout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Initiate logout from the main navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the public home page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "View paginated posts on the dashboard",
+    "description": "An authenticated member can view the dashboard feed and navigate pagination to see more posts.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the pagination controls at the bottom of the feed"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to go to the next page of posts"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a list of posts is displayed for the newly selected page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Require authentication to view dashboard",
+    "description": "A visitor who navigates to the dashboard is redirected to the login page.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Logged-out user cannot access authenticated dashboard",
+    "description": "After logging out, attempting to access an authenticated page redirects the user to the login page.",
+    "category": "Logout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Initiate logout from the main navigation"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Update profile name and email",
+    "description": "An authenticated member can update their profile name and email and sees a success confirmation.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/profile"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new display name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid new email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile update form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a profile update success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Request a password reset and see confirmation",
+    "description": "Verifies a visitor can submit an email for password reset and sees a confirmation status message.",
+    "category": "Forgot Password (request reset)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /forgot-password"
+      },
+      {
+        "type": "action",
+        "description": "Fill reset.user@example.test into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password reset request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a password reset request confirmation status is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Change password successfully and log in with the new password",
+    "description": "An authenticated member can change their password and then log in again using the new password.",
+    "category": "Password Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new display name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same password into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/password"
+      },
+      {
+        "type": "action",
+        "description": "Fill the current password field with the original password used during registration"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new valid password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same new password into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with the account email used during registration"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with the new password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Delete account and lose access to dashboard afterward",
+    "description": "An authenticated member can delete their account and is redirected out of authenticated pages and cannot access the dashboard afterward.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new display name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same password into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/profile"
+      },
+      {
+        "type": "action",
+        "description": "Click the delete account action"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the delete action"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC012",
+    "title": "Filter the dashboard feed to My Posts",
+    "description": "An authenticated member can enable the My Posts filter and see the feed update to the filtered list.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the My Posts filter control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the feed list updates to reflect the My Posts filter state"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC013",
+    "title": "Switch to Dark theme",
+    "description": "An authenticated member can switch to the dark appearance theme and the UI updates immediately.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Dark theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page theme updates to dark immediately"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC014",
+    "title": "Switch to Light theme",
+    "description": "An authenticated member can switch to the light appearance theme and the UI updates immediately.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Light theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page theme updates to light immediately"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Navigate from login to forgot password",
+    "description": "Verifies a user can reach the password reset request page from the login screen.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Click the forgot password link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is on the forgot password request page"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Switch between filtered and unfiltered feed views",
+    "description": "An authenticated member can switch to My Posts and back to the full feed and the feed updates accordingly.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the My Posts filter control"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to return to the full feed view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the feed list reflects the full feed view after removing the filter"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Theme selection persists after page reload",
+    "description": "After changing the theme, the selected appearance remains applied after the page is reloaded.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Light theme option"
+      },
+      {
+        "type": "action",
+        "description": "Reload the page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the theme is still applied as light"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Switch to System theme",
+    "description": "An authenticated member can switch to the system appearance setting and the UI updates immediately to follow system preference.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the System theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the page theme updates to follow system preference immediately"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Theme selection persists when navigating away and back",
+    "description": "After changing the theme, the selected appearance remains applied when the user navigates to another page and returns to appearance settings.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Dark theme option"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open appearance settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the theme is still applied as dark"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC020",
+    "title": "Reject password change when confirmation mismatches",
+    "description": "An authenticated member cannot change their password when confirmation mismatches and sees a validation error.",
+    "category": "Password Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/password"
+      },
+      {
+        "type": "action",
+        "description": "Fill the current password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new valid password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a different password into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a password confirmation validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC021",
+    "title": "Reject invalid login credentials",
+    "description": "Verifies login fails with incorrect credentials and an error is shown while staying unauthenticated.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid.user@example.test"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with wrong-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an invalid credentials error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC022",
+    "title": "Show validation when updating profile with invalid email",
+    "description": "An authenticated member cannot save an invalid email in profile settings and sees a validation error.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/profile"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid email format into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile update form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC023",
+    "title": "Prevent registration with invalid inputs",
+    "description": "Verifies registration blocks invalid email format or mismatched password confirmation and shows validation errors without leaving the registration page.",
+    "category": "User Registration",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill New User Invalid into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid-email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a different valid password into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify registration form validation errors are visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC024",
+    "title": "Prevent submitting an empty post",
+    "description": "An authenticated member cannot submit an empty post and sees an input validation error.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Ensure the post body field is empty"
+      },
+      {
+        "type": "action",
+        "description": "Submit the new post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a post body validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC025",
+    "title": "Handle invalid email on password reset request",
+    "description": "Verifies the forgot-password form shows validation or status feedback when the email input is invalid.",
+    "category": "Forgot Password (request reset)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /forgot-password"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid-email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password reset request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email validation error or status message is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC026",
+    "title": "Cancel delete-account confirmation",
+    "description": "An authenticated member can start account deletion and cancel, keeping the account and remaining in the authenticated area.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings/profile"
+      },
+      {
+        "type": "action",
+        "description": "Click the delete account action"
+      },
+      {
+        "type": "action",
+        "description": "Cancel the delete confirmation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on an authenticated settings view and no deletion confirmation success is shown"
+      }
+    ],
+    "priority": "Low"
+  }
+]
