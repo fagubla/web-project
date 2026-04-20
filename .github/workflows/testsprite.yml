@@ -1,0 +1,119 @@
+name: TestSprite Frontend Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  testsprite:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_URL: http://127.0.0.1:8765
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
+      CACHE_STORE: file
+      SESSION_DRIVER: file
+      QUEUE_CONNECTION: sync
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── PHP & Composer ─────────────────────────────────────────────────────
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: sqlite3, pdo_sqlite
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # ── Node & assets ──────────────────────────────────────────────────────
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # ── Laravel bootstrap ─────────────────────────────────────────────────
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Set APP_URL to port 8765
+        run: sed -i 's|APP_URL=.*|APP_URL=http://127.0.0.1:8765|' .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Generate Ziggy routes
+        run: php artisan ziggy:generate
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Create SQLite database
+        run: touch database/database.sqlite
+
+      - name: Run migrations and seed
+        run: php artisan migrate --seed --force
+
+      # ── Start Laravel server ───────────────────────────────────────────────
+      - name: Start Laravel development server on port 8765
+        run: php artisan serve --host=127.0.0.1 --port=8765 &
+        # Wait until the server is ready before proceeding
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 20); do
+            curl -sf http://127.0.0.1:8765 > /dev/null && echo "Server ready" && break
+            echo "Waiting... ($i)"
+            sleep 2
+          done
+
+      # ── Python + Playwright ────────────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright and dependencies
+        run: |
+          pip install playwright pytest pytest-asyncio
+          playwright install chromium --with-deps
+
+      # ── Run TestSprite tests ───────────────────────────────────────────────
+      - name: Run TestSprite frontend tests
+        env:
+          TESTSPRITE_API_KEY: ${{ secrets.TESTSPRITE_API_KEY }}
+        run: |
+          cd testsprite_tests
+          passed=0
+          failed=0
+          for test in TC*.py; do
+            echo "▶ Running $test"
+            if python "$test"; then
+              echo "✔ PASSED: $test"
+              passed=$((passed + 1))
+            else
+              echo "✘ FAILED: $test"
+              failed=$((failed + 1))
+            fi
+          done
+          echo ""
+          echo "══════════════════════════════"
+          echo "  Results: $passed passed, $failed failed"
+          echo "══════════════════════════════"
+          [ "$failed" -eq 0 ]
