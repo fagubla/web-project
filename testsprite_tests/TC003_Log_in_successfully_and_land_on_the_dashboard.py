@@ -24,7 +24,7 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(5000)
+        context.set_default_timeout(30000)
 
         # Open a new page in the browser context
         page = await context.new_page()
@@ -54,31 +54,7 @@ async def run_test():
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Log in' link on the current Register page to open the login form so we can fill credentials and submit.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Navigate to http://127.0.0.1:8765/login to open the login form so credentials can be entered.
-        await page.goto("http://127.0.0.1:8765/login")
-        
-        # -> Fill the email field with fabio@example.com, fill the password field with password, then click the Log in button to submit and reach the dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        await page.wait_for_url("**/dashboard**", timeout=15000)
         
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]

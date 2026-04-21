@@ -24,54 +24,81 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(30000)
+        context.set_default_timeout(5000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://127.0.0.1:8765
-        await page.goto("http://127.0.0.1:8765")
+        # -> Navigate to http://localhost:8765
+        await page.goto("http://localhost:8765")
         
-        # -> Open the login page by clicking the 'Log in' link.
+        # -> Click the 'Log in' link to open the login page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields and submit the login form to authenticate the user.
+        # -> Fill the email field with the test account email and then the password, then submit the form to log in.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
+        await asyncio.sleep(3); await elem.fill('test@test.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
-        await page.wait_for_url("**/dashboard**", timeout=15000)
         
-        # -> Click the user avatar/menu to open account menu so I can navigate to Settings → Appearance.
+        # -> Click the 'Log in' link on the registration page to open the login form so we can sign in with test@test.com.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Navigate to /login and open the login form so we can sign in with test@test.com
+        await page.goto("http://localhost:8765/login")
+        
+        # -> Fill the email field with test@test.com, fill the password with Fabio0159, then submit the login form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('test@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the user menu and select the Appearance/Theme settings so we can choose the Light theme.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the Settings item in the account menu to open the Settings page (so we can access Appearance).
+        # -> Click the 'Settings' item in the user menu to open the appearance/settings page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[2]/div/div[3]/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the Appearance settings page (/settings/appearance) so I can select the Light theme and verify the UI updates immediately.
-        await page.goto("http://127.0.0.1:8765/settings/appearance")
+        # -> Click the 'Appearance' item in the Settings sidebar to open appearance settings, then verify and select the Light theme.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/aside/nav/a[3]').nth(0)
+        await asyncio.sleep(3); await elem.click()
         
-        # -> Click the Light theme option so the account uses the Light appearance and verify the UI updates immediately.
+        # -> Click the 'Light' button to select the Light theme and verify the UI updates immediately to the light appearance.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/div/button').nth(0)

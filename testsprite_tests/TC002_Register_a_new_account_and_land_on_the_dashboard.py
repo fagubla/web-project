@@ -24,45 +24,74 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(30000)
+        context.set_default_timeout(5000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://127.0.0.1:8765
-        await page.goto("http://127.0.0.1:8765")
+        # -> Navigate to http://localhost:8765
+        await page.goto("http://localhost:8765")
         
-        # -> Click the 'Register' link to open the registration page.
+        # -> Click the 'Register' link to open the registration form page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/header/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the registration page at /register so the registration form fields are visible.
-        await page.goto("http://127.0.0.1:8765/register")
-        
-        # -> Fill the registration form (name, email, password, confirm password) and submit the form, then verify redirection to the authenticated dashboard.
+        # -> Fill the 'Name' field (index 258) with 'User One'.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('New User 1')
+        await asyncio.sleep(3); await elem.fill('User One')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('new.user.1@example.test')
+        await asyncio.sleep(3); await elem.fill('user.one@example.com')
+        
+        # -> Click the 'Sign up' link to open the registration form so I can fill the confirm password and submit the form.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Sign up' link to open the registration form so I can fill the remaining fields.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/div/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the registration form by clicking the 'Register' link so the form fields are visible and can be filled.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/header/nav/a[2]').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the registration page by navigating to /register so the registration form fields are visible.
+        await page.goto("http://localhost:8765/register")
+        
+        # -> Fill the Name field with 'User One' (index 796) as the immediate action, then fill email, password, confirm password, and submit.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('User One')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('user.one@example.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[3]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Password123!')
+        await asyncio.sleep(3); await elem.fill('ValidPass123!')
         
-        # -> Fill the Confirm password field with the same password, submit the registration form, then verify redirection to the authenticated dashboard.
+        # -> Fill the Confirm password field with 'ValidPass123!' and submit the registration form, then verify the user is redirected to the authenticated dashboard.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[4]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Password123!')
+        await asyncio.sleep(3); await elem.fill('ValidPass123!')
         
         frame = context.pages[-1]
         # Click element

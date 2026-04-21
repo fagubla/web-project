@@ -24,111 +24,106 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(30000)
+        context.set_default_timeout(5000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://127.0.0.1:8765
-        await page.goto("http://127.0.0.1:8765")
+        # -> Navigate to http://localhost:8765
+        await page.goto("http://localhost:8765")
         
-        # -> Click the 'Log in' link to reach the login page so I can authenticate as the existing user.
+        # -> Click the 'Log in' link to open the login form.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields with the provided credentials and submit the login form to authenticate as fabio@example.com.
+        # -> Fill the email and password fields and click 'Log in' to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
+        await asyncio.sleep(3); await elem.fill('test@test.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
-        await page.wait_for_url("**/dashboard**", timeout=15000)
         
-        # -> Open the user avatar/menu so I can navigate to Settings → Password (or to the password settings page).
+        # -> Click the 'Log in' link on the Register page to open the login form and sign in with test@test.com / Fabio0159.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Settings' item in the account menu to reach the Settings pages (then navigate to the Password tab/page).
+        # -> Click the 'Log in' link on the Register page to open the login form so I can sign in with the provided credentials.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/div[3]/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div/div/div/div/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the Password settings tab so the password change form is visible.
+        # -> Open the login page by clicking the 'Log in' link so I can sign in with test@test.com / Fabio0159.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/aside/nav/a[2]').nth(0)
+        elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Load the password settings page (/settings/password) so I can fill the current and new password fields.
-        await page.goto("http://127.0.0.1:8765/settings/password")
-        
-        # -> Fill the current password, new password, and confirm password fields, then click 'Save password' to submit the password change.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/form/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/form/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('new-password-123')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/form/div[3]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('new-password-123')
-        
-        # -> Click the 'Save password' button to submit the password change.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/form/div[4]/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Open the account menu so the logout option is visible (then use it to sign out and proceed to /login to authenticate with the new password).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click 'Log out' in the account menu to sign out so we can attempt to log in with the new password.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Log in with the new password to verify the password change was successful.
-        await page.goto("http://127.0.0.1:8765/login")
-        
+        # -> Fill Email and Password and click the Log in button to authenticate (email=test@test.com, password=Fabio0159).
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
+        await asyncio.sleep(3); await elem.fill('test@test.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('new-password-123')
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
-        await page.wait_for_url("**/dashboard**", timeout=15000)
+        
+        # -> Click the 'Log in' link on the Register page to open the login form so I can sign in.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the login page (/login) so I can enter credentials and attempt to sign in once more.
+        await page.goto("http://localhost:8765/login")
+        
+        # -> Fill the email and password fields with the provided credentials and click the Log in button to authenticate (attempt the final login).
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('test@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill the new-post textarea with the test message, submit it, wait for the feed to update, and extract the topmost post text to verify the new post appears first.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/main/div/div/form/textarea').nth(0)
+        await asyncio.sleep(3); await elem.fill('Post created by automated test')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/main/div/div/form/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
         
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]

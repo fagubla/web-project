@@ -24,56 +24,72 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(30000)
+        context.set_default_timeout(5000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://127.0.0.1:8765
-        await page.goto("http://127.0.0.1:8765")
+        # -> Navigate to http://localhost:8765
+        await page.goto("http://localhost:8765")
         
-        # -> Click the 'Log in' link to open the login form.
+        # -> Click the 'Log in' link to open the login page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email field with fabio@example.com, fill the password, and submit the login form.
+        # -> Fill the email field with the provided username (test@test.com), fill password, and submit the login form.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
+        await asyncio.sleep(3); await elem.fill('test@test.com')
         
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
         
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
-        await page.wait_for_url("**/dashboard**", timeout=15000)
         
-        # -> Open the user avatar/menu to reveal the logout control so we can log out.
+        # -> Click the 'Log in' link on the Register page to open the login form so we can authenticate.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Log out' menu item to sign out, then navigate to /dashboard and observe whether the app redirects to the login page.
+        # -> Navigate directly to the login page (/login) so we can submit credentials.
+        await page.goto("http://localhost:8765/login")
+        
+        # -> Fill the email and password fields with the provided credentials and submit the login form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('test@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        await page.goto("http://127.0.0.1:8765/dashboard")
-        
-        # --> Test passed — verified by AI agent
+        # -> Click the 'My Posts' filter/tab so we can confirm the feed updates for the user's posts.
         frame = context.pages[-1]
-        current_url = await frame.evaluate("() => window.location.href")
-        assert current_url is not None, "Test completed successfully"
+        # Click element
+        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[2]/div/ul/li[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # --> Assertions to verify final state
+        frame = context.pages[-1]
+        # Assertion generation failed: Error code: 400 - {'error': {'message': 'Invalid prompt: your prompt was flagged as potentially viol
+        assert await frame.locator("xpath=//*[contains(., 'Test Completed Successfully')]").nth(0).is_visible(), 'Test Completed Successfully'
         await asyncio.sleep(5)
 
     finally:

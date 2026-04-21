@@ -24,7 +24,7 @@ async def run_test():
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(5000)
+        context.set_default_timeout(30000)
 
         # Open a new page in the browser context
         page = await context.new_page()
@@ -54,24 +54,8 @@ async def run_test():
         # Click element
         elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
+        await page.wait_for_url("**/dashboard**", timeout=15000)
         
-        # -> Fill the email and password fields and submit the login form by clicking 'Log in'.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('fabio@example.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('password')
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Submit the login form (send Enter) to authenticate, then navigate to /settings/appearance.
         await page.goto("http://127.0.0.1:8765/settings/appearance")
         
         # -> Click the 'Dark' appearance option (element index 756) and wait for the UI to update, then verify the page switches to dark mode.

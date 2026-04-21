@@ -10,6 +10,10 @@ on:
       - develop
       - main
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   testsprite:
     runs-on: ubuntu-latest
@@ -96,6 +100,7 @@ jobs:
 
       # ── Run TestSprite tests ───────────────────────────────────────────────
       - name: Run TestSprite frontend tests
+        id: testsprite
         env:
           TESTSPRITE_API_KEY: ${{ secrets.TESTSPRITE_API_KEY }}
         run: |
@@ -116,4 +121,24 @@ jobs:
           echo "══════════════════════════════"
           echo "  Results: $passed passed, $failed failed"
           echo "══════════════════════════════"
+          echo "failed=$failed" >> $GITHUB_OUTPUT
           [ "$failed" -eq 0 ]
+
+      # ── Create Issue on Failure ───────────────────────────────────────────
+      - name: Create GitHub Issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failed = '${{ steps.testsprite.outputs.failed }}';
+            const run_url = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `❌ TestSprite Failure: ${failed} tests fallidos`,
+              body: `### Reporte de Fallos en TestSprite\n\n` +
+                    `Se detectaron **${failed}** errores en la ejecución automática.\n\n` +
+                    `**Workflow:** [Ver ejecución detallada](${run_url})\n` +
+                    `**Evento:** ${context.eventName} por @${context.actor}`
+            });
