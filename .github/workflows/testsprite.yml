@@ -138,6 +138,11 @@ jobs:
           echo "══════════════════════════════"
           echo "failed=$failed" >> $GITHUB_OUTPUT
           [ "$failed" -eq 0 ]
+        with:
+          testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
+          base_url: ${{ secrets.LARAVEL_CLOUD_URL }}
+          auto-fix: true 
+          create-pr: true
 
       # ── Create Issue on Failure ───────────────────────────────────────────
       - name: Create GitHub Issue on failure
