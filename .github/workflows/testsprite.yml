@@ -98,6 +98,19 @@ jobs:
           pip install playwright pytest pytest-asyncio
           playwright install chromium --with-deps
 
+      # ── Pre-check: verify test files exist ────────────────────────────────
+      - name: TestSprite Pre-Check
+        run: |
+          shopt -s nullglob
+          tests=(testsprite_tests/TC*.py)
+          count=${#tests[@]}
+          if [ "$count" -eq 0 ]; then
+            echo "::error::TestSprite Pre-Check — No tests detected in testsprite_tests/. Ensure TC*.py files are committed to this branch."
+            exit 1
+          fi
+          echo "✔ TestSprite Pre-Check — Found $count test file(s):"
+          for t in "${tests[@]}"; do echo "  • $t"; done
+
       # ── Run TestSprite tests ───────────────────────────────────────────────
       - name: Run TestSprite frontend tests
         id: testsprite
@@ -105,9 +118,11 @@ jobs:
           TESTSPRITE_API_KEY: ${{ secrets.TESTSPRITE_API_KEY }}
         run: |
           cd testsprite_tests
+          shopt -s nullglob
           passed=0
           failed=0
-          for test in TC*.py; do
+          tests=(TC*.py)
+          for test in "${tests[@]}"; do
             echo "▶ Running $test"
             if python "$test"; then
               echo "✔ PASSED: $test"
@@ -123,6 +138,11 @@ jobs:
           echo "══════════════════════════════"
           echo "failed=$failed" >> $GITHUB_OUTPUT
           [ "$failed" -eq 0 ]
+        with:
+          testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
+          base_url: ${{ secrets.LARAVEL_CLOUD_URL }}
+          auto-fix: true 
+          create-pr: true
 
       # ── Create Issue on Failure ───────────────────────────────────────────
       - name: Create GitHub Issue on failure
