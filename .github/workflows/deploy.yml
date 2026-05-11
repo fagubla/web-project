@@ -63,15 +63,15 @@ jobs:
       - name: Validar URL para TestSprite
         run: |
           if [ -z "${{ needs.deploy.outputs.app_url }}" ]; then
-            echo "ERROR: needs.deploy.outputs.app_url viene vacío. Se usará URL fija de respaldo."
-          else
-            echo "URL desde deploy: ${{ needs.deploy.outputs.app_url }}"
+            echo "ERROR: needs.deploy.outputs.app_url viene vacío. Revisa el secreto LARAVEL_CLOUD_URL."
+            exit 1
           fi
+          echo "URL desde deploy: ${{ needs.deploy.outputs.app_url }}"
       - name: TestSprite Action
         uses: TestSprite/run-action@v1
         with:
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
-          base_url: ${{ needs.deploy.outputs.app_url || 'https://web-project-main-mf9txh.free.laravel.cloud' }}
+          base_url: ${{ needs.deploy.outputs.app_url }}
           blocking: 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
