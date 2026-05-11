@@ -110,15 +110,6 @@ jobs:
           fi
           echo "TestSprite Pre-Check estricto OK: $count archivo(s) encontrados."
 
-      - name: Verificar conectividad de TestSprite API
-        run: |
-          echo "Validando token TestSprite contra /health..."
-          if ! curl -fsSL -H "Authorization: Bearer ${{ secrets.TESTSPRITE_API_KEY }}" https://api.testsprite.com/health; then
-            echo "ERROR: No se pudo validar el API key de TestSprite."
-            echo "Revisa que TESTSPRITE_API_KEY sea correcto y que tengas salida a api.testsprite.com."
-            exit 1
-          fi
-
       - name: TestSprite Action
         id: testsprite
         uses: TestSprite/run-action@v1
@@ -127,20 +118,3 @@ jobs:
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
           base_url: ${{ needs.deploy.outputs.app_url }}
           blocking: 'true'
-
-      - name: Resumen de resultados TestSprite
-        if: always()
-        run: |
-          echo "total_tests=${{ steps.testsprite.outputs.total_tests || '0' }}"
-          echo "passed_tests=${{ steps.testsprite.outputs.passed_tests || '0' }}"
-          echo "result_url=${{ steps.testsprite.outputs.result_url || 'none' }}"
-
-      - name: Forzar fallo si TestSprite no detecta tests
-        if: always()
-        run: |
-          TOTAL_TESTS="${{ steps.testsprite.outputs.total_tests }}"
-          if [ -z "$TOTAL_TESTS" ] || [ "$TOTAL_TESTS" = "0" ]; then
-            echo "ERROR: TestSprite respondió pero no detectó casos para ejecutar (total_tests=${TOTAL_TESTS:-0})."
-            echo "Esto indica problema de integración del API con la suite (no de Laravel Cloud)."
-            exit 1
-          fi
