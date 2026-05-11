@@ -1,4 +1,4 @@
-name: Deploy to Laravel Cloud
+name: Deploy to Laravel Cloud and run TestSprite
 
 on:
   pull_request:
@@ -11,18 +11,48 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      app_url: ${{ steps.app-info.outputs.app_url }}
     steps:
+      - id: app-info
+        run: |
+          if [ -z "${{ secrets.LARAVEL_CLOUD_URL }}" ]; then
+            echo "ERROR: LARAVEL_CLOUD_URL secret is not configured." >&2
+            exit 1
+          fi
+          echo "app_url=${{ secrets.LARAVEL_CLOUD_URL }}" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to Laravel Cloud
         run: |
-          curl -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}?commit_hash=${{ github.sha }}"
+          if [ -z "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}" ]; then
+            echo "ERROR: LARAVEL_CLOUD_DEPLOY_HOOK secret is not configured." >&2
+            exit 1
+          fi
+          curl -fsSL -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}?commit_hash=${{ github.sha }}"
+
+      - name: Wait for Laravel Cloud deployment
+        timeout-minutes: 8
+        run: |
+          echo "Esperando que Laravel Cloud responda..."
+          for i in $(seq 1 24); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.LARAVEL_CLOUD_URL }}" || true)
+            if [ "$status" = "200" ] || [ "$status" = "301" ] || [ "$status" = "302" ] || [ "$status" = "307" ] || [ "$status" = "308" ]; then
+              echo "Deployment available (HTTP $status)."
+              exit 0
+            fi
+            echo "Intento $i/24: app aún no responde (HTTP $status). Reintentando..."
+            sleep 20
+          done
+          echo "ERROR: la app no respondió a tiempo después del deploy." >&2
+          exit 1
   test:
     needs: deploy
     runs-on: ubuntu-latest
+    if: needs.deploy.result == 'success'
     steps:
-      - uses: actions/checkout@v4
       - name: TestSprite Action
         uses: TestSprite/run-action@v1
         with:
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
-          base_url: ${{ secrets.LARAVEL_CLOUD_URL }}
+          base_url: ${{ needs.deploy.outputs.app_url }}
           blocking: 'true'
