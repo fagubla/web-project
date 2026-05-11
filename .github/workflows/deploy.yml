@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+concurrency:
+  group: testsprite-deploy-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   issues: write
@@ -12,6 +16,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     outputs:
       app_url: ${{ steps.app_info.outputs.app_url }}
     steps:
@@ -51,6 +56,7 @@ jobs:
   test:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     if: needs.deploy.result == 'success'
     steps:
       - uses: actions/checkout@v4
@@ -67,11 +73,40 @@ jobs:
             exit 1
           fi
           echo "URL desde deploy: ${{ needs.deploy.outputs.app_url }}"
+
+      - name: Validar suite de TestSprite (estricto)
+        id: testsprite_precheck
+        run: |
+          if [ ! -d testsprite_tests ]; then
+            echo "ERROR: Carpeta testsprite_tests no existe en el checkout del PR."
+            echo "Asegúrate de que el commit incluya los archivos generados por TestSprite."
+            exit 1
+          fi
+
+          if ! compgen -G "testsprite_tests/TC*.py" > /dev/null; then
+            echo "ERROR: No se detectan archivos testsprite_tests/TC*.py en este commit."
+            ls -la testsprite_tests
+            echo "Sin estos tests no se puede ejecutar TestSprite."
+            exit 1
+          fi
+
+          count=0
+          for f in testsprite_tests/TC*.py; do
+            count=$((count + 1))
+            echo "  - $f"
+          done
+          if [ "$count" -eq 0 ]; then
+            echo "ERROR: Patron TC*.py sin archivos válidos."
+            exit 1
+          fi
+          echo "TestSprite Pre-Check estricto OK: $count archivo(s) encontrados."
+
       - name: TestSprite Action
+        id: testsprite
         uses: TestSprite/run-action@v1
         with:
+          github-token: ${{ github.token }}
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
           base_url: ${{ needs.deploy.outputs.app_url }}
+          priority: 'High,Medium'
           blocking: 'true'
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
