@@ -52,6 +52,13 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.deploy.result == 'success'
     steps:
+      - uses: actions/checkout@v4
+      - name: Preparar ruta requerida por TestSprite
+        run: |
+          mkdir -p testsprite_tests/tmp
+          if [ ! -f testsprite_tests/tmp/test_results.json ]; then
+            echo '[]' > testsprite_tests/tmp/test_results.json
+          fi
       - name: Validar URL para TestSprite
         run: |
           if [ -z "${{ needs.deploy.outputs.app_url }}" ]; then
