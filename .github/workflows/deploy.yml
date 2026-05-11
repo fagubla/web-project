@@ -59,6 +59,14 @@ jobs:
     timeout-minutes: 40
     if: needs.deploy.result == 'success'
     steps:
+      - name: Validar secretos requeridos
+        run: |
+          if [ -z "${{ secrets.TESTSPRITE_API_KEY }}" ]; then
+            echo "ERROR: TESTSPRITE_API_KEY no está configurado o no está disponible en este contexto."
+            echo "Si el PR viene de un fork, los secrets no se exponen y TestSprite no puede ejecutarse."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
       - name: Preparar ruta requerida por TestSprite
         run: |
@@ -83,18 +91,19 @@ jobs:
             exit 1
           fi
 
-          if ! compgen -G "testsprite_tests/TC*.py" > /dev/null; then
+          TRACKED_TESTS=$(git ls-files "testsprite_tests/TC*.py")
+          if [ -z "$TRACKED_TESTS" ]; then
             echo "ERROR: No se detectan archivos testsprite_tests/TC*.py en este commit."
+            echo "Archivos locales encontrados:"
             ls -la testsprite_tests
             echo "Sin estos tests no se puede ejecutar TestSprite."
             exit 1
           fi
 
-          count=0
-          for f in testsprite_tests/TC*.py; do
-            count=$((count + 1))
-            echo "  - $f"
+          echo "$TRACKED_TESTS" | sort | while read -r test_file; do
+            echo "  - $test_file"
           done
+          count=$(echo "$TRACKED_TESTS" | wc -l | tr -d ' ')
           if [ "$count" -eq 0 ]; then
             echo "ERROR: Patron TC*.py sin archivos válidos."
             exit 1
@@ -108,5 +117,4 @@ jobs:
           github-token: ${{ github.token }}
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
           base_url: ${{ needs.deploy.outputs.app_url }}
-          priority: 'High,Medium'
           blocking: 'true'
