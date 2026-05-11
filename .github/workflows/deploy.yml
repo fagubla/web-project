@@ -12,15 +12,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     outputs:
-      app_url: ${{ steps.app-info.outputs.app_url }}
+      app_url: ${{ steps.app_info.outputs.app_url }}
     steps:
-      - id: app-info
+      - id: app_info
         run: |
           if [ -z "${{ secrets.LARAVEL_CLOUD_URL }}" ]; then
             echo "ERROR: LARAVEL_CLOUD_URL secret is not configured." >&2
             exit 1
           fi
-          echo "app_url=${{ secrets.LARAVEL_CLOUD_URL }}" >> "$GITHUB_OUTPUT"
+          APP_URL="${{ secrets.LARAVEL_CLOUD_URL }}"
+          APP_URL="${APP_URL%/}"
+          echo "app_url=$APP_URL" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to Laravel Cloud
         run: |
