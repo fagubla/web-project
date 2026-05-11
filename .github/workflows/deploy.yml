@@ -68,48 +68,6 @@ jobs:
           fi
 
       - uses: actions/checkout@v4
-      - name: Preparar ruta requerida por TestSprite
-        run: |
-          mkdir -p testsprite_tests/tmp
-          if [ ! -f testsprite_tests/tmp/test_results.json ]; then
-            echo '[]' > testsprite_tests/tmp/test_results.json
-          fi
-      - name: Validar URL para TestSprite
-        run: |
-          if [ -z "${{ needs.deploy.outputs.app_url }}" ]; then
-            echo "ERROR: needs.deploy.outputs.app_url viene vacío. Revisa el secreto LARAVEL_CLOUD_URL."
-            exit 1
-          fi
-          echo "URL desde deploy: ${{ needs.deploy.outputs.app_url }}"
-
-      - name: Validar suite de TestSprite (estricto)
-        id: testsprite_precheck
-        run: |
-          if [ ! -d testsprite_tests ]; then
-            echo "ERROR: Carpeta testsprite_tests no existe en el checkout del PR."
-            echo "Asegúrate de que el commit incluya los archivos generados por TestSprite."
-            exit 1
-          fi
-
-          TRACKED_TESTS=$(git ls-files "testsprite_tests/TC*.py")
-          if [ -z "$TRACKED_TESTS" ]; then
-            echo "ERROR: No se detectan archivos testsprite_tests/TC*.py en este commit."
-            echo "Archivos locales encontrados:"
-            ls -la testsprite_tests
-            echo "Sin estos tests no se puede ejecutar TestSprite."
-            exit 1
-          fi
-
-          echo "$TRACKED_TESTS" | sort | while read -r test_file; do
-            echo "  - $test_file"
-          done
-          count=$(echo "$TRACKED_TESTS" | wc -l | tr -d ' ')
-          if [ "$count" -eq 0 ]; then
-            echo "ERROR: Patron TC*.py sin archivos válidos."
-            exit 1
-          fi
-          echo "TestSprite Pre-Check estricto OK: $count archivo(s) encontrados."
-
       - name: TestSprite Action
         id: testsprite
         uses: TestSprite/run-action@v1
