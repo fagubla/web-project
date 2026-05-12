@@ -1,0 +1,968 @@
+[
+  {
+    "file_path": "testsprite_tests/TC001_Log_in_and_reach_the_dashboard.py",
+    "id": "TC001",
+    "title": "Log in and reach the dashboard",
+    "description": "Verifies an existing user can log in with valid credentials and reach the authenticated dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "filepath": "testsprite_tests/TC002_Create_a_new_account_and_land_on_the_dashboard.py",
+    "id": "TC002",
+    "title": "Register a new account and land on the dashboard",
+    "description": "Verifies a visitor can register with valid details and is redirected to the authenticated dashboard on success.",
+    "category": "User Registration",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill User One into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill user.one@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill ValidPass123! into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill ValidPass123! into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Log out from dashboard and lose access to protected pages",
+    "description": "Verifies an authenticated user can log out from the account menu and is subsequently blocked from accessing the dashboard.",
+    "category": "Logout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Open the account menu"
+      },
+      {
+        "type": "action",
+        "description": "Choose the log out action"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to an authentication screen or otherwise blocked from viewing the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Create a post and see it appear at the top of the global feed",
+    "description": "Verifies an authenticated user can create a new post from the dashboard and the new post appears at the top of the feed.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill Post created by automated test into the new post field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the new post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the newest post in the feed is displayed at the top"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Block access to dashboard when unauthenticated",
+    "description": "Verifies unauthenticated access to the dashboard is blocked and the user is redirected to log in.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is prompted to log in"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Update profile name and email successfully",
+    "description": "Verifies an authenticated user can update their profile name and email and sees a success confirmation.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Test User Updated\" into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"test.user.updated@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile changes form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Filter feed between My Posts and All posts",
+    "description": "Verifies an authenticated user can switch to My Posts and back to All and the feed updates accordingly.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the My Posts filter tab"
+      },
+      {
+        "type": "action",
+        "description": "Click the All filter tab"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the feed shows posts from multiple users"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Change password successfully while logged in",
+    "description": "Verifies an authenticated user can change their password and sees a success confirmation.",
+    "category": "Password Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password Changer\" into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"pwchange@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"OldPassword123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"OldPassword123!\" into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open password settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"OldPassword123!\" into the current password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"NewPassword123!\" into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"NewPassword123!\" into the confirm new password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Switch to Dark theme applies immediately",
+    "description": "Verifies an authenticated user can select the Dark theme and the UI updates immediately to the dark appearance.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Dark theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is using the dark theme styling"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Log in with Remember Me enabled",
+    "description": "Verifies a user can enable Remember Me and successfully log in to the dashboard.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Select the Remember Me option"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Switch to Light theme applies immediately",
+    "description": "Verifies an authenticated user can select the Light theme and the UI updates immediately to the light appearance.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Light theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is using the light theme styling"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Switch to System theme applies immediately",
+    "description": "Verifies an authenticated user can select the System theme and the UI updates immediately to follow the system preference.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the System theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is using the system-following theme mode"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Theme selection persists after page reload",
+    "description": "Verifies that after selecting a theme, reloading the page keeps the chosen theme applied.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Light theme option"
+      },
+      {
+        "type": "action",
+        "description": "Press Reload"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is still using the light theme styling"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC014",
+    "title": "Password change shows error when current password is incorrect",
+    "description": "Verifies the password settings form rejects an incorrect current password and shows a validation error without changing the password.",
+    "category": "Password Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Current PW Validator\" into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"currentpw@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"CorrectPassword123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"CorrectPassword123!\" into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open password settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"WrongPassword123!\" into the current password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"NewPassword123!\" into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"NewPassword123!\" into the confirm new password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a current password validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Theme selection persists across route changes",
+    "description": "Verifies that after selecting a theme, navigating to another page and back retains the chosen theme.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Dark theme option"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is still using the dark theme styling"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Delete account with current password confirmation and lose access",
+    "description": "Verifies a user can delete their account by confirming with the current password and is then blocked from accessing the dashboard.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Delete Me\" into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"deleteme@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Initiate the account deletion flow"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the current password field in the confirmation dialog"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the account deletion"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to an authentication screen or otherwise blocked from viewing the dashboard"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Cancel account deletion from confirmation dialog",
+    "description": "Verifies initiating account deletion can be safely canceled and the account remains accessible.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Initiate the account deletion flow"
+      },
+      {
+        "type": "action",
+        "description": "Cancel the deletion in the confirmation dialog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the profile settings page remains accessible and the account is not deleted"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Switching themes multiple times ends in the final selected theme",
+    "description": "Verifies that toggling between Light, Dark, and System results in the UI matching the last selected theme mode.",
+    "category": "Appearance Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to appearance settings"
+      },
+      {
+        "type": "action",
+        "description": "Select the Light theme option"
+      },
+      {
+        "type": "action",
+        "description": "Select the Dark theme option"
+      },
+      {
+        "type": "action",
+        "description": "Select the System theme option"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the application is using the system-following theme mode"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Password change shows error when confirmation does not match",
+    "description": "Verifies the password settings form shows a validation error when the new password and confirmation do not match.",
+    "category": "Password Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Mismatch Tester\" into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"pwmismatch@example.com\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open password settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Password123!\" into the current password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"NewPassword123!\" into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"DifferentPassword123!\" into the confirm new password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a password confirmation validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC020",
+    "title": "Show error on invalid login credentials",
+    "description": "Verifies the login form rejects incorrect credentials and shows an invalid-credentials error without authenticating the user.",
+    "category": "User Login",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid.user@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill WrongPassword123! into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an invalid credentials error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on the login page"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC021",
+    "title": "Show validation errors when registration fields are invalid",
+    "description": "Verifies the registration form blocks submission with invalid inputs and shows validation errors while staying on the registration page.",
+    "category": "User Registration",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill User Invalid into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill ValidPass123! into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill DifferentPass123! into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation errors are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on the registration page"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC022",
+    "title": "Prevent creating an empty post",
+    "description": "Verifies the dashboard prevents submitting an empty post and shows a validation error without adding a new post to the feed.",
+    "category": "Post Feed (Dashboard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Submit the new post without entering content"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a post validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC023",
+    "title": "Prevent registration when required fields are missing",
+    "description": "Verifies the registration form requires mandatory fields and shows validation errors when submitted incomplete.",
+    "category": "User Registration",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill user.missing@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation errors are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user remains on the registration page"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC024",
+    "title": "Profile update blocks invalid email format",
+    "description": "Verifies the profile form prevents saving when the email format is invalid and shows an inline validation error.",
+    "category": "Profile Settings",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation link to open profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"not-an-email\" into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile changes form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  }
+]

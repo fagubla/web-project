@@ -1,0 +1,82 @@
+name: Deploy to Laravel Cloud and run TestSprite
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - develop
+      - main
+
+concurrency:
+  group: testsprite-deploy-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      app_url: ${{ steps.app_info.outputs.app_url }}
+    steps:
+      - id: app_info
+        run: |
+          if [ -z "${{ secrets.LARAVEL_CLOUD_URL }}" ]; then
+            echo "ERROR: LARAVEL_CLOUD_URL secret is not configured." >&2
+            exit 1
+          fi
+          APP_URL="${{ secrets.LARAVEL_CLOUD_URL }}"
+          APP_URL="${APP_URL%/}"
+          echo "app_url=$APP_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to Laravel Cloud
+        run: |
+          if [ -z "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}" ]; then
+            echo "ERROR: LARAVEL_CLOUD_DEPLOY_HOOK secret is not configured." >&2
+            exit 1
+          fi
+          curl -fsSL -X POST "${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}?commit_hash=${{ github.sha }}"
+
+      - name: Wait for Laravel Cloud deployment
+        timeout-minutes: 8
+        run: |
+          echo "Esperando que Laravel Cloud responda..."
+          for i in $(seq 1 24); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.LARAVEL_CLOUD_URL }}" || true)
+            if [ "$status" = "200" ] || [ "$status" = "301" ] || [ "$status" = "302" ] || [ "$status" = "307" ] || [ "$status" = "308" ]; then
+              echo "Deployment available (HTTP $status)."
+              exit 0
+            fi
+            echo "Intento $i/24: app aún no responde (HTTP $status). Reintentando..."
+            sleep 20
+          done
+          echo "ERROR: la app no respondió a tiempo después del deploy." >&2
+          exit 1
+  test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    if: needs.deploy.result == 'success'
+    steps:
+      - name: Validar secretos requeridos
+        run: |
+          if [ -z "${{ secrets.TESTSPRITE_API_KEY }}" ]; then
+            echo "ERROR: TESTSPRITE_API_KEY no está configurado o no está disponible en este contexto."
+            echo "Si el PR viene de un fork, los secrets no se exponen y TestSprite no puede ejecutarse."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+      - name: TestSprite Action
+        id: testsprite
+        uses: TestSprite/run-action@v1
+        with:
+          github-token: ${{ github.token }}
+          testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
+          base_url: ${{ needs.deploy.outputs.app_url }}
+          blocking: 'true'
+          project-path: '.'
