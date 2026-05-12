@@ -79,4 +79,4 @@ jobs:
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
           base_url: ${{ needs.deploy.outputs.app_url }}
           blocking: 'true'
-          project-path: ./testsprite_tests
+          project-path: '.'
