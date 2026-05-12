@@ -24,7 +24,9 @@ yarn-error.log
 /.zed
 
 # TestSprite runtime files (contain API keys and proxy credentials)
-/testsprite_tests/tmp/
+/testsprite_tests/tmp/*
+!/testsprite_tests/tmp/test_results.json
+!/testsprite_tests/tmp/raw_report.md
 
 # SQLite database
 /database/database.sqlite
