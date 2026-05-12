@@ -3,6 +3,9 @@ name: Deploy to Laravel Cloud and run TestSprite
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - develop
+      - main
 
 concurrency:
   group: testsprite-deploy-${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -118,3 +121,4 @@ jobs:
           testsprite-api-key: ${{ secrets.TESTSPRITE_API_KEY }}
           base_url: ${{ needs.deploy.outputs.app_url }}
           blocking: 'true'
+          project-path: ./testsprite_tests

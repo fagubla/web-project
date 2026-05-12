@@ -1,4 +1,5 @@
 import asyncio
+import re
 from playwright import async_api
 from playwright.async_api import expect
 
@@ -15,104 +16,53 @@ async def run_test():
         browser = await pw.chromium.launch(
             headless=True,
             args=[
-                "--window-size=1280,720",         # Set the browser window size
-                "--disable-dev-shm-usage",        # Avoid using /dev/shm which can cause issues in containers
-                "--ipc=host",                     # Use host-level IPC for better stability
-                "--single-process"                # Run the browser in a single process mode
+                "--window-size=1280,720",
+                "--disable-dev-shm-usage",
+                "--ipc=host",
+                "--single-process"
             ],
         )
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(5000)
+        # Wider default timeout to match the agent's DOM-stability budget;
+        # auto-waiting Playwright APIs (expect, locator.wait_for) inherit this.
+        context.set_default_timeout(15000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:8765
+        # -> navigate
         await page.goto("http://localhost:8765")
+        try:
+            await page.wait_for_load_state("domcontentloaded", timeout=5000)
+        except Exception:
+            pass
         
-        # -> Click the 'Log in' link to open the login page.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Open the login page by clicking the 'Log in' link (index 7).
+        # link "Log in"
+        elem = page.locator("xpath=/html/body/div/div/header/nav/a").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Fill the email and password fields with the provided credentials and submit the form to reach the dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('test@test.com')
+        # -> Fill the email field with fabio@example.com, fill the password with password, then submit the form.
+        # email input placeholder="email@example.com"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("fabio@example.com")
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        # -> Fill the email field with fabio@example.com, fill the password with password, then submit the form.
+        # password input placeholder="Password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[2]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("password")
         
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Log in' link on the Register page to open the login form (use element index 378).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Log in' link on the Register page to open the login form so we can enter credentials.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Open the login page by clicking the 'Log in' link (element index 530).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Fill the email field with test@test.com, fill the password with Fabio0159, then click Log in to submit the form and reach the dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('test@test.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Fabio0159')
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Log in' link on the Register page to open the login form so we can enter credentials.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Navigate directly to the login page (/login) so I can fill credentials and submit the form.
-        await page.goto("http://localhost:8765/login")
-        
-        # -> Fill the email field, fill the password field, then click the Log in button to submit and reach the authenticated dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('test@test.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Fabio0159')
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Fill the email field with fabio@example.com, fill the password with password, then submit the form.
+        # button "Log in"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
         # --> Test passed — verified by AI agent
         frame = context.pages[-1]

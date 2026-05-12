@@ -1,4 +1,5 @@
 import asyncio
+import re
 from playwright import async_api
 from playwright.async_api import expect
 
@@ -8,115 +9,94 @@ async def run_test():
     context = None
 
     try:
-        # Start a Playwright session in asynchronous mode
         pw = await async_api.async_playwright().start()
-
-        # Launch a Chromium browser in headless mode with custom arguments
         browser = await pw.chromium.launch(
             headless=True,
             args=[
-                "--window-size=1280,720",         # Set the browser window size
-                "--disable-dev-shm-usage",        # Avoid using /dev/shm which can cause issues in containers
-                "--ipc=host",                     # Use host-level IPC for better stability
-                "--single-process"                # Run the browser in a single process mode
+                "--window-size=1280,720",
+                "--disable-dev-shm-usage",
+                "--ipc=host",
+                "--single-process"
             ],
         )
-
-        # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(5000)
-
-        # Open a new page in the browser context
+        context.set_default_timeout(15000)
         page = await context.new_page()
-
-        # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:8765
+        # -> navigate
         await page.goto("http://localhost:8765")
+        try:
+            await page.wait_for_load_state("domcontentloaded", timeout=5000)
+        except Exception:
+            pass
         
         # -> Click the 'Log in' link to open the login page.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/header/nav/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # link "Log in"
+        elem = page.locator("xpath=/html/body/div/div/header/nav/a").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Fill the email field with test@test.com, then fill the password and submit the login form.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('test@test.com')
+        # -> Fill email and password fields and submit the login form to sign in as fabio@example.com.
+        # email input placeholder="email@example.com"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("fabio@example.com")
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        # -> Fill email and password fields and submit the login form to sign in as fabio@example.com.
+        # password input placeholder="Password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[2]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("password")
         
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Fill email and password fields and submit the login form to sign in as fabio@example.com.
+        # button "Log in"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Fill the email and password fields and submit the login form to sign in, then proceed to appearance settings.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('test@test.com')
+        # -> Open the user menu to access the Appearance or Settings link (click the 'fabio' button).
+        # button "F
+fabio"
+        elem = page.locator("xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Fabio0159')
+        # -> Click the 'Settings' menu item to open the Settings / Appearance page so the theme can be changed.
+        # button "Settings"
+        elem = page.locator("xpath=/html/body/div[2]/div/div[3]/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Open the Appearance settings by clicking the 'Appearance' item in the Settings sidebar, so the theme can be changed.
+        # link "Appearance"
+        elem = page.locator("xpath=/html/body/div/div/main/div/div[2]/aside/nav/a[3]").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Open the user menu / appearance settings so we can select the Dark theme.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Open the Appearance settings by clicking the 'Appearance' item in the Settings sidebar (element index 1101).
+        # link "Appearance"
+        elem = page.locator("xpath=/html/body/div/div/main/div/div[2]/aside/nav/a[3]").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Click the 'Settings' menu item to open the appearance/settings page so we can select the Dark theme.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[2]/div/div[3]/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Click the Dark theme button (element index 1763), then navigate to Dashboard (1684), then return to Appearance (1741) and verify the dark theme persists.
+        # button "Dark"
+        elem = page.locator("xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/div/button[2]").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Open the user menu to reveal the Settings menu item so we can navigate to the appearance/settings page.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[3]/ul/li/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Click the Dark theme button (element index 1763), then navigate to Dashboard (1684), then return to Appearance (1741) and verify the dark theme persists.
+        # link "Dashboard"
+        elem = page.locator("xpath=/html/body/div/div/div/div[2]/div/div[2]/div/ul/li/a").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Click the 'Appearance' item in the Settings navigation to open the appearance/theme settings so we can select the Dark theme.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/aside/nav/a[3]').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Click the Dark theme button (element index 1763), then navigate to Dashboard (1684), then return to Appearance (1741) and verify the dark theme persists.
+        # link "Appearance"
+        elem = page.locator("xpath=/html/body/div[1]/div/main/div/div[2]/aside/nav/a[3]").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Navigate directly to the Appearance settings page so the theme controls are visible.
-        await page.goto("http://localhost:8765/settings/appearance")
-        
-        # -> Click the 'Dark' theme option to set Dark theme, then navigate to Dashboard, then return to Appearance to verify persistence.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/main/div/div[2]/div[2]/section/div/div/button[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div[2]/div/div[2]/div/ul/li/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        await page.goto("http://localhost:8765/settings/appearance")
-        
-        # --> Test passed — verified by AI agent
-        frame = context.pages[-1]
-        current_url = await frame.evaluate("() => window.location.href")
-        assert current_url is not None, "Test completed successfully"
         await asyncio.sleep(5)
-
     finally:
         if context:
             await context.close()

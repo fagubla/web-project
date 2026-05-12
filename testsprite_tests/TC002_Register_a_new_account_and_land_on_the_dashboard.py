@@ -1,4 +1,5 @@
 import asyncio
+import re
 from playwright import async_api
 from playwright.async_api import expect
 
@@ -15,93 +16,111 @@ async def run_test():
         browser = await pw.chromium.launch(
             headless=True,
             args=[
-                "--window-size=1280,720",         # Set the browser window size
-                "--disable-dev-shm-usage",        # Avoid using /dev/shm which can cause issues in containers
-                "--ipc=host",                     # Use host-level IPC for better stability
-                "--single-process"                # Run the browser in a single process mode
+                "--window-size=1280,720",
+                "--disable-dev-shm-usage",
+                "--ipc=host",
+                "--single-process"
             ],
         )
 
         # Create a new browser context (like an incognito window)
         context = await browser.new_context()
-        context.set_default_timeout(5000)
+        # Wider default timeout to match the agent's DOM-stability budget;
+        # auto-waiting Playwright APIs (expect, locator.wait_for) inherit this.
+        context.set_default_timeout(15000)
 
         # Open a new page in the browser context
         page = await context.new_page()
 
         # Interact with the page elements to simulate user flow
-        # -> Navigate to http://localhost:8765
+        # -> navigate
         await page.goto("http://localhost:8765")
+        try:
+            await page.wait_for_load_state("domcontentloaded", timeout=5000)
+        except Exception:
+            pass
         
-        # -> Click the 'Register' link to open the registration form page.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/header/nav/a[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Click the 'Register' link to open the registration form.
+        # link "Register"
+        elem = page.locator("xpath=/html/body/div/div/header/nav/a[2]").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Fill the 'Name' field (index 258) with 'User One'.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('User One')
+        # -> Fill the Name field with 'User One' (immediate action).
+        # text input placeholder="Full name"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("User One")
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('user.one@example.com')
+        # -> Fill the Name field with 'User One' (immediate action).
+        # email input placeholder="email@example.com"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[2]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("user.one@example.com")
         
-        # -> Click the 'Sign up' link to open the registration form so I can fill the confirm password and submit the form.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div[2]/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Fill the Name field with 'User One' (immediate action).
+        # password input placeholder="Password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[3]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("ValidPass123!")
         
-        # -> Click the 'Sign up' link to open the registration form so I can fill the remaining fields.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Fill the Name field with 'User One' (immediate action).
+        # password input placeholder="Confirm password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[4]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("ValidPass123!")
         
-        # -> Open the registration form by clicking the 'Register' link so the form fields are visible and can be filled.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/header/nav/a[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Fill the Name field with 'User One' (immediate action).
+        # button "Create account"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        # -> Open the registration page by navigating to /register so the registration form fields are visible.
-        await page.goto("http://localhost:8765/register")
+        # -> Use a unique email address, re-enter password fields if needed, submit the registration form again to try to complete registration and be redirected to the dashboard.
+        # email input placeholder="email@example.com"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[2]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("user.one+20260511@example.com")
         
-        # -> Fill the Name field with 'User One' (index 796) as the immediate action, then fill email, password, confirm password, and submit.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('User One')
+        # -> Use a unique email address, re-enter password fields if needed, submit the registration form again to try to complete registration and be redirected to the dashboard.
+        # password input placeholder="Password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[3]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("ValidPass123!")
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[2]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('user.one@example.com')
+        # -> Use a unique email address, re-enter password fields if needed, submit the registration form again to try to complete registration and be redirected to the dashboard.
+        # button "Create account"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
         
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[3]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('ValidPass123!')
+        # -> Enter a new unique email, re-fill password and confirm password, submit the Create account form to attempt successful registration and verify redirect to dashboard.
+        # email input placeholder="email@example.com"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[2]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("user.one+20260511a@example.com")
         
-        # -> Fill the Confirm password field with 'ValidPass123!' and submit the registration form, then verify the user is redirected to the authenticated dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/div[4]/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('ValidPass123!')
+        # -> Enter a new unique email, re-fill password and confirm password, submit the Create account form to attempt successful registration and verify redirect to dashboard.
+        # password input placeholder="Password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[3]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("ValidPass123!")
         
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div/div/div/div/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Enter a new unique email, re-fill password and confirm password, submit the Create account form to attempt successful registration and verify redirect to dashboard.
+        # password input placeholder="Confirm password"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/div[4]/input").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.fill("ValidPass123!")
         
-        # --> Test passed — verified by AI agent
-        frame = context.pages[-1]
-        current_url = await frame.evaluate("() => window.location.href")
-        assert current_url is not None, "Test completed successfully"
+        # -> Enter a new unique email, re-fill password and confirm password, submit the Create account form to attempt successful registration and verify redirect to dashboard.
+        # button "Create account"
+        elem = page.locator("xpath=/html/body/div/div/div/div/form/div/button").nth(0)
+        await elem.wait_for(state="visible", timeout=10000)
+        await elem.click()
+        
+        # --> Assertions to verify final state
+        current_url = await page.evaluate("() => window.location.href")
+        assert '/dashboard' in current_url, "The page should have navigated to the dashboard after successful registration"
         await asyncio.sleep(5)
 
     finally:
