@@ -37,6 +37,7 @@ const submit = () => {
 
 <template>
     <Head title="Dashboard" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <a href="/dashboard?my-posts=true">My Posts</a>
