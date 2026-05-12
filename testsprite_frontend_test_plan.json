@@ -1,5 +1,6 @@
 [
   {
+    "file_path": "testsprite_tests/TC001_Log_in_and_reach_the_dashboard.py",
     "id": "TC001",
     "title": "Log in and reach the dashboard",
     "description": "Verifies an existing user can log in with valid credentials and reach the authenticated dashboard.",
@@ -29,6 +30,7 @@
     "priority": "High"
   },
   {
+    "filepath": "testsprite_tests/TC002_Create_a_new_account_and_land_on_the_dashboard.py",
     "id": "TC002",
     "title": "Register a new account and land on the dashboard",
     "description": "Verifies a visitor can register with valid details and is redirected to the authenticated dashboard on success.",
